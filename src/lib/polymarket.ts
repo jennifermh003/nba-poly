@@ -211,10 +211,14 @@ export function deriveSeriesOdds(
     return { teamA: 0.5, teamB: 0.5 };
   }
 
-  return {
-    teamA: teamAOdds / sum,
-    teamB: teamBOdds / sum,
-  };
+  const rawA = teamAOdds / sum;
+
+  const MIN_ODDS = 0.01;
+  const MAX_ODDS = 0.99;
+  const clampedA = Math.min(MAX_ODDS, Math.max(MIN_ODDS, rawA));
+  const clampedB = 1 - clampedA;
+
+  return { teamA: clampedA, teamB: clampedB };
 }
 
 export {

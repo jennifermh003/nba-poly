@@ -125,7 +125,6 @@ export function buildDynamicBracket(
   overrides: Record<string, string>,
   westConfOdds: Record<string, number>,
   eastConfOdds: Record<string, number>,
-  championshipOdds: Record<string, number>,
 ): BracketMatchupConfig[] {
   const allMatchups: BracketMatchupConfig[] = [...R1_MATCHUPS];
 

@@ -55,7 +55,6 @@ function buildMatchups(odds: OddsResponse, overrides: Record<string, string>): M
     overrides,
     odds.westConf,
     odds.eastConf,
-    odds.championship,
   );
 
   return configs.map((config) => {
@@ -66,12 +65,24 @@ function buildMatchups(odds: OddsResponse, overrides: Record<string, string>): M
     let status: MatchupStatus;
     if (config.round === 1) {
       status = overrides[config.id] ? 'overridden' : 'confirmed';
-    } else if (overrides[config.id]) {
-      status = 'overridden';
-    } else if (Object.keys(overrides).length > 0) {
-      status = 'overridden';
     } else {
-      status = 'projected';
+      // Check if any override in a PRIOR round of the SAME conference affects this matchup
+      const hasRelevantOverride = Object.keys(overrides).some((key) => {
+        const parts = key.split('-');
+        const overrideConf = parts[0]; // 'W' or 'E' or 'FINALS'
+        const matchupConf = config.conference === 'west' ? 'W' : config.conference === 'east' ? 'E' : 'FINALS';
+        // An override is relevant if it's in the same conference or if this is the Finals
+        if (config.conference === 'finals') return true;
+        return overrideConf === matchupConf;
+      });
+
+      if (overrides[config.id]) {
+        status = 'overridden';
+      } else if (hasRelevantOverride) {
+        status = 'overridden';
+      } else {
+        status = 'projected';
+      }
     }
 
     const topTeam: MatchupTeam = {
