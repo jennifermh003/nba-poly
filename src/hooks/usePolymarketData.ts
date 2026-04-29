@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { BracketData, Matchup, MatchupTeam, MatchupStatus } from '@/lib/types';
-import { buildDynamicBracket } from '@/lib/bracket';
+import { buildDynamicBracket, SERIES_DATA } from '@/lib/bracket';
 import { deriveSeriesOdds } from '@/lib/polymarket';
 import { PolymarketWebSocket } from '@/lib/websocket';
 
@@ -58,20 +58,28 @@ function buildMatchups(odds: OddsResponse, overrides: Record<string, string>): M
   );
 
   return configs.map((config) => {
+    const series = SERIES_DATA[config.id];
     const topOdds = getConferenceOdds(config.topSeed, config.conference, odds);
     const bottomOdds = getConferenceOdds(config.bottomSeed, config.conference, odds);
-    const derived = deriveSeriesOdds(topOdds, bottomOdds);
+
+    let derivedA: number;
+    let derivedB: number;
+    if (series?.completed) {
+      derivedA = series.topWins > series.bottomWins ? 1 : 0;
+      derivedB = 1 - derivedA;
+    } else {
+      const derived = deriveSeriesOdds(topOdds, bottomOdds);
+      derivedA = derived.teamA;
+      derivedB = derived.teamB;
+    }
 
     let status: MatchupStatus;
     if (config.round === 1) {
       status = overrides[config.id] ? 'overridden' : 'confirmed';
     } else {
-      // Check if any override in a PRIOR round of the SAME conference affects this matchup
       const hasRelevantOverride = Object.keys(overrides).some((key) => {
-        const parts = key.split('-');
-        const overrideConf = parts[0]; // 'W' or 'E' or 'FINALS'
+        const overrideConf = key.split('-')[0];
         const matchupConf = config.conference === 'west' ? 'W' : config.conference === 'east' ? 'E' : 'FINALS';
-        // An override is relevant if it's in the same conference or if this is the Finals
         if (config.conference === 'finals') return true;
         return overrideConf === matchupConf;
       });
@@ -85,27 +93,48 @@ function buildMatchups(odds: OddsResponse, overrides: Record<string, string>): M
       }
     }
 
+    let seriesScore: string;
+    if (series) {
+      if (series.completed) {
+        const winnerAbbr = series.topWins > series.bottomWins ? config.topSeed : config.bottomSeed;
+        seriesScore = `${winnerAbbr} wins ${series.topWins}-${series.bottomWins}`;
+      } else if (series.nextGame) {
+        const leadTeam = series.topWins > series.bottomWins ? config.topSeed
+          : series.bottomWins > series.topWins ? config.bottomSeed : null;
+        const scoreStr = leadTeam
+          ? `${leadTeam} leads ${Math.max(series.topWins, series.bottomWins)}-${Math.min(series.topWins, series.bottomWins)}`
+          : `Tied ${series.topWins}-${series.bottomWins}`;
+        seriesScore = `${scoreStr} · ${series.nextGame}`;
+      } else {
+        seriesScore = `${series.topWins}-${series.bottomWins}`;
+      }
+    } else if (config.round > 1) {
+      seriesScore = status === 'overridden' ? 'Scenario' : 'Projected';
+    } else {
+      seriesScore = 'Projected';
+    }
+
     const topTeam: MatchupTeam = {
       abbreviation: config.topSeed,
       seed: config.topSeedNum,
-      odds: derived.teamA,
+      odds: derivedA,
       trend: 0,
-      price: Math.round(derived.teamA * 100),
+      price: Math.round(derivedA * 100),
     };
 
     const bottomTeam: MatchupTeam = {
       abbreviation: config.bottomSeed,
       seed: config.bottomSeedNum,
-      odds: derived.teamB,
+      odds: derivedB,
       trend: 0,
-      price: Math.round(derived.teamB * 100),
+      price: Math.round(derivedB * 100),
     };
 
     return {
       id: config.id,
       round: config.round,
       conference: config.conference,
-      seriesScore: config.round === 1 ? 'Projected' : status === 'overridden' ? 'Scenario' : 'Projected',
+      seriesScore,
       topTeam,
       bottomTeam,
       status,

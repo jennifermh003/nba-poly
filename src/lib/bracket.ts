@@ -2,12 +2,30 @@ export interface BracketMatchupConfig {
   id: string;
   round: number; // 1-4
   conference: 'west' | 'east' | 'finals';
-  position: number; // position within the round (0-indexed, top to bottom)
-  topSeed: string; // team abbreviation
+  position: number;
+  topSeed: string;
   bottomSeed: string;
   topSeedNum: number;
   bottomSeedNum: number;
 }
+
+export interface SeriesInfo {
+  topWins: number;
+  bottomWins: number;
+  completed: boolean;
+  nextGame?: string;
+}
+
+export const SERIES_DATA: Record<string, SeriesInfo> = {
+  'W-R1-0': { topWins: 4, bottomWins: 0, completed: true },
+  'W-R1-1': { topWins: 3, bottomWins: 1, completed: false, nextGame: 'Game 5 · Apr 29 · 10 PM ET' },
+  'W-R1-2': { topWins: 2, bottomWins: 3, completed: false, nextGame: 'Game 6 · Apr 30 · 9:30 PM ET' },
+  'W-R1-3': { topWins: 4, bottomWins: 1, completed: true },
+  'E-R1-0': { topWins: 1, bottomWins: 3, completed: false, nextGame: 'Game 5 · Apr 29 · 7 PM ET' },
+  'E-R1-1': { topWins: 2, bottomWins: 2, completed: false, nextGame: 'Game 5 · Apr 29 · 7:30 PM ET' },
+  'E-R1-2': { topWins: 3, bottomWins: 2, completed: false, nextGame: 'Game 6 · Apr 30 · 7 PM ET' },
+  'E-R1-3': { topWins: 3, bottomWins: 2, completed: false, nextGame: 'Game 6 · Apr 30 · 8 PM ET' },
+};
 
 export const R1_MATCHUPS: BracketMatchupConfig[] = [
   // ── West Round 1 (2025-26 NBA Playoffs) ──

@@ -105,32 +105,35 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
       {/* Meta bar */}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
           padding: '5px 10px 4px',
-          borderBottom: '1px solid rgba(0,0,0,0.04)',
+          borderBottom: '1px solid var(--bracket-line-color, rgba(0,0,0,0.04))',
         }}
       >
-        <span
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: 0.8,
-            color: 'var(--text-muted, #9d9e9f)',
-          }}
-        >
-          {tag}
-        </span>
-        <span
-          style={{
-            fontSize: 9,
-            fontWeight: 600,
-            color: 'var(--text-secondary, #6c6e6f)',
-          }}
-        >
-          {matchup.seriesScore}
-        </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: 0.8,
+              color: 'var(--text-muted, #9d9e9f)',
+            }}
+          >
+            {tag}
+          </span>
+          <span
+            style={{
+              fontSize: 8,
+              fontWeight: 600,
+              color: 'var(--text-secondary, #6c6e6f)',
+              textAlign: 'right',
+              maxWidth: 160,
+              lineHeight: 1.3,
+            }}
+          >
+            {matchup.seriesScore}
+          </span>
+        </div>
       </div>
 
       {/* Team rows */}
