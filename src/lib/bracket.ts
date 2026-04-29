@@ -106,10 +106,11 @@ function pickWinner(
   overrides: Record<string, string>,
   confOdds: Record<string, number>,
 ): { abbr: string; seed: number } {
-  if (overrides[matchupId]) {
-    const winnerAbbr = overrides[matchupId];
-    if (winnerAbbr === top.abbr) return top;
-    if (winnerAbbr === bottom.abbr) return bottom;
+  const override = overrides[matchupId];
+  if (override) {
+    if (override === top.abbr) return top;
+    if (override === bottom.abbr) return bottom;
+    // Stale override — team not in this matchup anymore. Ignore it.
   }
 
   const topOdds = confOdds[top.abbr] ?? 0;
