@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BracketData, Matchup, MatchupTeam } from '@/lib/types';
-import { BRACKET_CONFIG } from '@/lib/bracket';
+import { BracketData, Matchup, MatchupTeam, MatchupStatus } from '@/lib/types';
+import { buildDynamicBracket } from '@/lib/bracket';
 import { deriveSeriesOdds } from '@/lib/polymarket';
 import { PolymarketWebSocket } from '@/lib/websocket';
 
@@ -50,20 +50,29 @@ function getConferenceOdds(
 // Helper: build the full matchup list from BRACKET_CONFIG + fetched odds
 // ---------------------------------------------------------------------------
 
-function buildMatchups(odds: OddsResponse): Matchup[] {
-  return BRACKET_CONFIG.map((config) => {
-    const topOdds = getConferenceOdds(
-      config.topSeed,
-      config.conference,
-      odds,
-    );
-    const bottomOdds = getConferenceOdds(
-      config.bottomSeed,
-      config.conference,
-      odds,
-    );
+function buildMatchups(odds: OddsResponse, overrides: Record<string, string>): Matchup[] {
+  const configs = buildDynamicBracket(
+    overrides,
+    odds.westConf,
+    odds.eastConf,
+    odds.championship,
+  );
 
+  return configs.map((config) => {
+    const topOdds = getConferenceOdds(config.topSeed, config.conference, odds);
+    const bottomOdds = getConferenceOdds(config.bottomSeed, config.conference, odds);
     const derived = deriveSeriesOdds(topOdds, bottomOdds);
+
+    let status: MatchupStatus;
+    if (config.round === 1) {
+      status = overrides[config.id] ? 'overridden' : 'confirmed';
+    } else if (overrides[config.id]) {
+      status = 'overridden';
+    } else if (Object.keys(overrides).length > 0) {
+      status = 'overridden';
+    } else {
+      status = 'projected';
+    }
 
     const topTeam: MatchupTeam = {
       abbreviation: config.topSeed,
@@ -85,9 +94,10 @@ function buildMatchups(odds: OddsResponse): Matchup[] {
       id: config.id,
       round: config.round,
       conference: config.conference,
-      seriesScore: 'Projected',
+      seriesScore: config.round === 1 ? 'Projected' : status === 'overridden' ? 'Scenario' : 'Projected',
       topTeam,
       bottomTeam,
+      status,
     } satisfies Matchup;
   });
 }
@@ -96,7 +106,7 @@ function buildMatchups(odds: OddsResponse): Matchup[] {
 // Hook
 // ---------------------------------------------------------------------------
 
-export function usePolymarketData(): UsePolymarketDataReturn {
+export function usePolymarketData(overrides: Record<string, string> = {}): UsePolymarketDataReturn {
   const [data, setData] = useState<BracketData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +125,7 @@ export function usePolymarketData(): UsePolymarketDataReturn {
     (status: BracketData['connectionStatus']) => {
       if (!oddsRef.current) return;
 
-      const matchups = buildMatchups(oddsRef.current);
+      const matchups = buildMatchups(oddsRef.current, overrides);
 
       setData({
         matchups,
@@ -123,7 +133,7 @@ export function usePolymarketData(): UsePolymarketDataReturn {
         connectionStatus: status,
       });
     },
-    [],
+    [overrides],
   );
 
   // -------------------------------------------------------------------
@@ -199,7 +209,7 @@ export function usePolymarketData(): UsePolymarketDataReturn {
         tokenIdToTeamRef.current = tokenMap;
 
         // Build initial matchups
-        const matchups = buildMatchups(odds);
+        const matchups = buildMatchups(odds, overrides);
 
         setData({
           matchups,
@@ -240,6 +250,15 @@ export function usePolymarketData(): UsePolymarketDataReturn {
       }
     };
   }, [handlePriceUpdate, handleStatusChange]);
+
+  // -------------------------------------------------------------------
+  // Effect: rebuild bracket when overrides change (no re-fetch needed)
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    if (oddsRef.current) {
+      rebuildData(connectionStatus);
+    }
+  }, [overrides, rebuildData, connectionStatus]);
 
   return { data, isLoading, error };
 }
