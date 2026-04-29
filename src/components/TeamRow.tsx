@@ -1,16 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { MatchupTeam } from '@/lib/types';
 import { TEAMS } from '@/lib/teams';
 
 interface TeamRowProps {
   team: MatchupTeam;
   isLeading: boolean;
+  onClick?: () => void;
+  isSelected?: boolean;
 }
 
-export function TeamRow({ team, isLeading }: TeamRowProps) {
+export function TeamRow({ team, isLeading, onClick, isSelected }: TeamRowProps) {
   const teamInfo = TEAMS[team.abbreviation];
   const mutedColor = 'var(--text-muted, #9d9e9f)';
+  const [hovered, setHovered] = useState(false);
 
   const trendFormatted =
     team.trend > 0
@@ -24,6 +28,9 @@ export function TeamRow({ team, isLeading }: TeamRowProps) {
 
   return (
     <div
+      onClick={onClick}
+      onMouseEnter={() => onClick && setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -31,7 +38,9 @@ export function TeamRow({ team, isLeading }: TeamRowProps) {
         padding: '0 10px 0 0',
         borderBottom: '1px solid rgba(0,0,0,0.03)',
         position: 'relative',
-        background: isLeading ? 'rgba(13,131,15,0.04)' : undefined,
+        background: isSelected ? 'rgba(13,131,15,0.08)' : isLeading ? 'rgba(13,131,15,0.04)' : hovered ? 'rgba(48,91,200,0.06)' : undefined,
+        cursor: onClick ? 'pointer' : undefined,
+        transition: 'background 0.1s',
       }}
     >
       {/* Seed */}
@@ -75,10 +84,10 @@ export function TeamRow({ team, isLeading }: TeamRowProps) {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          color: isLeading ? undefined : mutedColor,
+          color: isSelected ? '#0d830f' : isLeading ? undefined : mutedColor,
         }}
       >
-        {teamInfo?.name ?? team.abbreviation}
+        {isSelected && '✓ '}{teamInfo?.name ?? team.abbreviation}
       </span>
 
       {/* Odds */}

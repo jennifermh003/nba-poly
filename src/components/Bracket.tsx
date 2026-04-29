@@ -7,6 +7,8 @@ import { Matchup } from './Matchup';
 
 interface BracketProps {
   matchups: MatchupType[];
+  onTeamClick?: (matchupId: string, teamAbbr: string) => void;
+  overrides?: Record<string, string>;
 }
 
 const roundLabels: Record<number, string> = {
@@ -16,7 +18,7 @@ const roundLabels: Record<number, string> = {
   4: 'Finals',
 };
 
-export function Bracket({ matchups }: BracketProps) {
+export function Bracket({ matchups, onTeamClick, overrides }: BracketProps) {
   // Filter matchups by round and conference
   const westR1 = matchups.filter((m) => m.round === 1 && m.conference === 'west');
   const westR2 = matchups.filter((m) => m.round === 2 && m.conference === 'west');
@@ -105,19 +107,19 @@ export function Bracket({ matchups }: BracketProps) {
         }}
       >
         {/* West R1 */}
-        <Round matchups={westR1} isR1 />
+        <Round matchups={westR1} isR1 onTeamClick={onTeamClick} overrides={overrides} />
 
         {/* Connectors R1 -> Semis (2 pairs: 4 matchups merge into 2) */}
         <Connectors pairs={2} />
 
         {/* West Semis */}
-        <Round matchups={westR2} />
+        <Round matchups={westR2} onTeamClick={onTeamClick} overrides={overrides} />
 
         {/* Connectors Semis -> CF (1 pair: 2 matchups merge into 1) */}
         <Connectors pairs={1} />
 
         {/* West Conf Finals */}
-        <Round matchups={westCF} />
+        <Round matchups={westCF} onTeamClick={onTeamClick} overrides={overrides} />
 
         {/* Connectors CF -> Finals (single line) */}
         <Connectors pairs={0} />
@@ -154,7 +156,7 @@ export function Bracket({ matchups }: BracketProps) {
                   🏆
                 </span>
               </div>
-              <Matchup matchup={finalsMatchup} />
+              <Matchup matchup={finalsMatchup} onTeamClick={onTeamClick} overriddenWinner={overrides?.[finalsMatchup.id]} />
             </div>
           ) : (
             <div
@@ -173,19 +175,19 @@ export function Bracket({ matchups }: BracketProps) {
         <Connectors pairs={0} />
 
         {/* East Conf Finals */}
-        <Round matchups={eastCF} />
+        <Round matchups={eastCF} onTeamClick={onTeamClick} overrides={overrides} />
 
         {/* Connectors CF -> Semis (1 pair) */}
         <Connectors pairs={1} />
 
         {/* East Semis */}
-        <Round matchups={eastR2} />
+        <Round matchups={eastR2} onTeamClick={onTeamClick} overrides={overrides} />
 
         {/* Connectors Semis -> R1 (2 pairs) */}
         <Connectors pairs={2} />
 
         {/* East R1 */}
-        <Round matchups={eastR1} isR1 />
+        <Round matchups={eastR1} isR1 onTeamClick={onTeamClick} overrides={overrides} />
       </div>
     </div>
   );

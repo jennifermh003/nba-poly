@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Matchup as MatchupType } from '@/lib/types';
+import { Matchup as MatchupType, MatchupStatus } from '@/lib/types';
 import { TeamRow } from './TeamRow';
 
 interface MatchupProps {
   matchup: MatchupType;
   isFinals?: boolean;
+  onTeamClick?: (matchupId: string, teamAbbr: string) => void;
+  overriddenWinner?: string;
 }
 
 function getMatchupTag(matchup: MatchupType): string {
@@ -26,31 +28,46 @@ function getMatchupTag(matchup: MatchupType): string {
   }
 }
 
-export function Matchup({ matchup, isFinals = false }: MatchupProps) {
+export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinner }: MatchupProps) {
   const [hovered, setHovered] = useState(false);
 
   const tag = getMatchupTag(matchup);
+  const status: MatchupStatus = matchup.status;
+
+  const statusBorder =
+    status === 'confirmed'
+      ? '1px solid rgba(0,0,0,0.06)'
+      : status === 'projected'
+        ? '1.5px dashed #c0c2c5'
+        : '1.5px dashed #f59e0b';
+
+  const statusOpacity =
+    status === 'confirmed' ? 1 : status === 'projected' ? 0.75 : 0.85;
 
   const cardStyle: React.CSSProperties = isFinals
     ? {
         width: 250,
         background: 'var(--card-bg, #fff)',
         borderRadius: 4,
-        border: '2px solid rgba(48,91,200,0.15)',
+        border: status === 'confirmed' ? '2px solid rgba(48,91,200,0.15)' : statusBorder,
         boxShadow: hovered
           ? '0 0 0 2px #305bc8, 0 2px 8px rgba(0,0,0,0.1)'
           : '0 2px 8px rgba(0,0,0,0.1)',
         overflow: 'hidden',
+        opacity: statusOpacity,
+        transition: 'opacity 0.15s, border-color 0.15s',
       }
     : {
         width: 250,
         background: 'var(--card-bg, #fff)',
         borderRadius: 4,
-        border: '1px solid rgba(0,0,0,0.06)',
+        border: statusBorder,
         boxShadow: hovered
           ? '0 0 0 2px #305bc8, 0 2px 8px rgba(0,0,0,0.1)'
           : '0 1px 4px rgba(0,0,0,0.08)',
         overflow: 'hidden',
+        opacity: statusOpacity,
+        transition: 'opacity 0.15s, border-color 0.15s',
       };
 
   return (
@@ -120,10 +137,14 @@ export function Matchup({ matchup, isFinals = false }: MatchupProps) {
       <TeamRow
         team={matchup.topTeam}
         isLeading={matchup.topTeam.odds > matchup.bottomTeam.odds}
+        onClick={onTeamClick ? () => onTeamClick(matchup.id, matchup.topTeam.abbreviation) : undefined}
+        isSelected={overriddenWinner === matchup.topTeam.abbreviation}
       />
       <TeamRow
         team={matchup.bottomTeam}
         isLeading={matchup.bottomTeam.odds > matchup.topTeam.odds}
+        onClick={onTeamClick ? () => onTeamClick(matchup.id, matchup.bottomTeam.abbreviation) : undefined}
+        isSelected={overriddenWinner === matchup.bottomTeam.abbreviation}
       />
     </div>
   );

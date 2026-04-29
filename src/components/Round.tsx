@@ -6,9 +6,11 @@ import { Matchup } from './Matchup';
 interface RoundProps {
   matchups: MatchupType[];
   isR1?: boolean;
+  onTeamClick?: (matchupId: string, teamAbbr: string) => void;
+  overrides?: Record<string, string>;
 }
 
-export function Round({ matchups, isR1 }: RoundProps) {
+export function Round({ matchups, isR1, onTeamClick, overrides }: RoundProps) {
   return (
     <div
       style={{
@@ -21,8 +23,13 @@ export function Round({ matchups, isR1 }: RoundProps) {
         minHeight: 0,
       }}
     >
-      {matchups.map((matchup) => (
-        <Matchup key={matchup.id} matchup={matchup} />
+      {matchups.map((m) => (
+        <Matchup
+          key={m.id}
+          matchup={m}
+          onTeamClick={onTeamClick}
+          overriddenWinner={overrides?.[m.id]}
+        />
       ))}
     </div>
   );
