@@ -27,7 +27,7 @@ export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
 
   const inactiveStyle: React.CSSProperties = {
     ...baseButton,
-    background: 'rgba(0,0,0,0.05)',
+    background: 'rgba(128,128,128,0.1)',
     color: 'var(--text-secondary, #6c6e6f)',
   };
 

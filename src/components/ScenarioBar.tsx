@@ -14,7 +14,7 @@ export function ScenarioBar({ overrideLabels, onRemove, onReset }: ScenarioBarPr
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 12px', margin: '0 40px 12px',
       background: 'var(--card-bg, #fff)',
-      border: '1px solid rgba(0,0,0,0.06)', borderRadius: 6,
+      border: 'var(--card-border)', borderRadius: 6,
       fontSize: 11, flexWrap: 'wrap',
     }}>
       <span style={{ color: 'var(--text-secondary, #6c6e6f)', fontWeight: 600 }}>What if:</span>

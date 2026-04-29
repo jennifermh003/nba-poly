@@ -8,16 +8,6 @@ import { ScenarioBar } from '@/components/ScenarioBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Bracket } from '@/components/Bracket';
 
-const ROUND_LABELS = [
-  'Round 1',
-  'Conf Semis',
-  'Conf Finals',
-  'NBA Finals',
-  'Conf Finals',
-  'Conf Semis',
-  'Round 1',
-];
-
 export default function Home() {
   const { overrides, setWinner, removeOverride, resetAll, overrideLabels } = useScenario();
   const { data, error } = usePolymarketData(overrides);
@@ -65,58 +55,6 @@ export default function Home() {
         onRemove={removeOverride}
         onReset={resetAll}
       />
-
-      {/* Conference labels */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '0 40px',
-        marginBottom: 8,
-      }}>
-        <span style={{
-          textTransform: 'uppercase',
-          fontSize: 10,
-          fontWeight: 800,
-          letterSpacing: 2.5,
-          color: 'var(--text-muted)',
-        }}>
-          Western Conference
-        </span>
-        <span style={{
-          textTransform: 'uppercase',
-          fontSize: 10,
-          fontWeight: 800,
-          letterSpacing: 2.5,
-          color: 'var(--text-muted)',
-        }}>
-          Eastern Conference
-        </span>
-      </div>
-
-      {/* Round labels */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
-      }}>
-        {ROUND_LABELS.map((label, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
-            {i > 0 && <div style={{ width: 32 }} />}
-            <div style={{
-              width: 250,
-              textAlign: 'center',
-              fontSize: 10,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: 1.2,
-              color: 'var(--text-muted)',
-            }}>
-              {label}
-            </div>
-          </div>
-        ))}
-      </div>
 
       {/* Bracket */}
       <Bracket matchups={data.matchups} onTeamClick={setWinner} overrides={overrides} />

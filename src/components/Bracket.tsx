@@ -49,7 +49,7 @@ export function Bracket({ matchups, onTeamClick, overrides }: BracketProps) {
             fontSize: '13px',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
-            color: '#6b7280',
+            color: 'var(--text-secondary, #6c6e6f)',
             paddingBottom: '4px',
           }}
         >
@@ -63,7 +63,7 @@ export function Bracket({ matchups, onTeamClick, overrides }: BracketProps) {
             fontSize: '13px',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
-            color: '#6b7280',
+            color: 'var(--text-secondary, #6c6e6f)',
             paddingBottom: '4px',
           }}
         >
@@ -156,12 +156,12 @@ export function Bracket({ matchups, onTeamClick, overrides }: BracketProps) {
                   🏆
                 </span>
               </div>
-              <Matchup matchup={finalsMatchup} onTeamClick={onTeamClick} overriddenWinner={overrides?.[finalsMatchup.id]} />
+              <Matchup matchup={finalsMatchup} isFinals onTeamClick={onTeamClick} overriddenWinner={overrides?.[finalsMatchup.id]} />
             </div>
           ) : (
             <div
               style={{
-                color: '#9ca3af',
+                color: 'var(--text-muted, #9d9e9f)',
                 fontSize: '13px',
                 textAlign: 'center',
               }}
@@ -203,7 +203,7 @@ function RoundLabel({ label }: { label: string }) {
         textAlign: 'center',
         fontSize: '11px',
         fontWeight: 600,
-        color: '#9ca3af',
+        color: 'var(--text-muted, #9d9e9f)',
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
         paddingBottom: '6px',

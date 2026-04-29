@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo '')",
+      "Bash(echo '# Node.js \\(user-local install\\)')",
+      "Bash(echo 'export PATH=\"$HOME/local/node/bin:$PATH\"')"
+    ]
+  }
+}

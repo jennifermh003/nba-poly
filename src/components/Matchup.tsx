@@ -36,7 +36,7 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
 
   const statusBorder =
     status === 'confirmed'
-      ? '1px solid rgba(0,0,0,0.06)'
+      ? 'var(--card-border)'
       : status === 'projected'
         ? '1.5px dashed #c0c2c5'
         : '1.5px dashed #f59e0b';
@@ -51,7 +51,7 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
         borderRadius: 4,
         border: status === 'confirmed' ? '2px solid rgba(48,91,200,0.15)' : statusBorder,
         boxShadow: hovered
-          ? '0 0 0 2px #305bc8, 0 2px 8px rgba(0,0,0,0.1)'
+          ? '0 0 0 2px var(--accent-blue, #305bc8), 0 2px 8px rgba(0,0,0,0.1)'
           : '0 2px 8px rgba(0,0,0,0.1)',
         overflow: 'hidden',
         opacity: statusOpacity,
@@ -63,7 +63,7 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
         borderRadius: 4,
         border: statusBorder,
         boxShadow: hovered
-          ? '0 0 0 2px #305bc8, 0 2px 8px rgba(0,0,0,0.1)'
+          ? '0 0 0 2px var(--accent-blue, #305bc8), 0 2px 8px rgba(0,0,0,0.1)'
           : '0 1px 4px rgba(0,0,0,0.08)',
         overflow: 'hidden',
         opacity: statusOpacity,
@@ -84,7 +84,7 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
             justifyContent: 'center',
             gap: 6,
             padding: '8px 10px',
-            borderBottom: '1px solid rgba(0,0,0,0.04)',
+            borderBottom: '1px solid var(--bracket-line-color, rgba(0,0,0,0.04))',
             background: 'rgba(48,91,200,0.03)',
           }}
         >
@@ -94,7 +94,7 @@ export function Matchup({ matchup, isFinals = false, onTeamClick, overriddenWinn
               fontWeight: 800,
               textTransform: 'uppercase',
               letterSpacing: 2,
-              color: '#305bc8',
+              color: 'var(--accent-blue, #305bc8)',
             }}
           >
             🏆 NBA FINALS

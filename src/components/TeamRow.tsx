@@ -24,7 +24,7 @@ export function TeamRow({ team, isLeading, onClick, isSelected }: TeamRowProps) 
         : null;
 
   const trendColor =
-    team.trend > 0 ? '#0d830f' : team.trend < 0 ? '#c4280e' : undefined;
+    team.trend > 0 ? 'var(--accent-green, #0d830f)' : team.trend < 0 ? 'var(--accent-red, #c4280e)' : undefined;
 
   return (
     <div
@@ -36,9 +36,9 @@ export function TeamRow({ team, isLeading, onClick, isSelected }: TeamRowProps) 
         alignItems: 'center',
         height: 36,
         padding: '0 10px 0 0',
-        borderBottom: '1px solid rgba(0,0,0,0.03)',
+        borderBottom: '1px solid rgba(128,128,128,0.1)',
         position: 'relative',
-        background: isSelected ? 'rgba(13,131,15,0.08)' : isLeading ? 'rgba(13,131,15,0.04)' : hovered ? 'rgba(48,91,200,0.06)' : undefined,
+        background: isSelected ? 'rgba(34,197,94,0.12)' : isLeading ? 'rgba(34,197,94,0.06)' : hovered ? 'rgba(99,102,241,0.1)' : undefined,
         cursor: onClick ? 'pointer' : undefined,
         transition: 'background 0.1s',
       }}
@@ -84,7 +84,7 @@ export function TeamRow({ team, isLeading, onClick, isSelected }: TeamRowProps) 
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          color: isSelected ? '#0d830f' : isLeading ? undefined : mutedColor,
+          color: isSelected ? 'var(--accent-green, #0d830f)' : isLeading ? undefined : mutedColor,
         }}
       >
         {isSelected && '✓ '}{teamInfo?.name ?? team.abbreviation}

@@ -45,7 +45,7 @@ export function Header({ connectionStatus, lastUpdated }: HeaderProps) {
             margin: 0,
           }}
         >
-          2025 NBA Playoffs
+          2026 NBA Playoffs
         </h1>
         <div
           style={{
