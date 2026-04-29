@@ -1,8 +1,10 @@
 'use client';
 
 import { usePolymarketData } from '@/hooks/usePolymarketData';
+import { useScenario } from '@/hooks/useScenario';
 import { useTheme } from '@/hooks/useTheme';
 import { Header } from '@/components/Header';
+import { ScenarioBar } from '@/components/ScenarioBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Bracket } from '@/components/Bracket';
 
@@ -17,7 +19,8 @@ const ROUND_LABELS = [
 ];
 
 export default function Home() {
-  const { data, error } = usePolymarketData();
+  const { overrides, setWinner, removeOverride, resetAll, overrideLabels } = useScenario();
+  const { data, error } = usePolymarketData(overrides);
   const { theme, toggleTheme } = useTheme();
 
   if (error) {
@@ -57,6 +60,11 @@ export default function Home() {
     <div style={{ minHeight: '100vh', padding: '24px 32px' }}>
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
       <Header connectionStatus={data.connectionStatus} lastUpdated={data.lastUpdated} />
+      <ScenarioBar
+        overrideLabels={overrideLabels}
+        onRemove={removeOverride}
+        onReset={resetAll}
+      />
 
       {/* Conference labels */}
       <div style={{
@@ -111,7 +119,7 @@ export default function Home() {
       </div>
 
       {/* Bracket */}
-      <Bracket matchups={data.matchups} />
+      <Bracket matchups={data.matchups} onTeamClick={setWinner} overrides={overrides} />
     </div>
   );
 }
