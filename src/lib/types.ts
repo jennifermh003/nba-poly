@@ -1,5 +1,7 @@
 export type Conference = 'west' | 'east';
 
+export type MatchupStatus = 'confirmed' | 'projected' | 'overridden';
+
 export interface TeamInfo {
   abbreviation: string;
   name: string;
@@ -24,6 +26,7 @@ export interface Matchup {
   seriesScore: string; // e.g. "OKC leads 3-1" or "Projected"
   topTeam: MatchupTeam;
   bottomTeam: MatchupTeam;
+  status: MatchupStatus;
 }
 
 export interface BracketData {
